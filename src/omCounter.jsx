@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import bgImage from './assets/image.png';
 import musicFile from './assets/god-trap-music-127261.mp3';
 
 export default function OmCounter() {
@@ -10,7 +9,6 @@ export default function OmCounter() {
   const [showTargetInput, setShowTargetInput] = useState(false);
   const audioRef = useRef(null);
 
-  // Prevent screen sleep and enable wake lock on mobile
   useEffect(() => {
     let wakeLock = null;
     
@@ -36,14 +34,16 @@ export default function OmCounter() {
   const increment = () => {
     if (target === 0) {
       setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 2000);
+      setTimeout(() => setShowMessage(false), 2500);
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
+      }
       return;
     }
 
     const newCount = count + 1;
     setCount(newCount);
 
-    // Haptic feedback for mobile
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
@@ -54,14 +54,13 @@ export default function OmCounter() {
         setIsPlaying(true);
       }
       
-      // Stronger vibration on completion
       if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
+        navigator.vibrate([200, 100, 200, 100, 300]);
       }
 
       setTimeout(() => {
         setCount(0);
-      }, 1000);
+      }, 2000);
     }
   };
 
@@ -77,126 +76,186 @@ export default function OmCounter() {
     setCount(0);
     setShowMessage(false);
     stopMusic();
+    if (navigator.vibrate) {
+      navigator.vibrate(100);
+    }
   };
 
   const openTargetInput = () => {
     setShowTargetInput(true);
+    if (navigator.vibrate) {
+      navigator.vibrate(30);
+    }
   };
 
   const closeTargetInput = () => {
     setShowTargetInput(false);
+    if (navigator.vibrate) {
+      navigator.vibrate(30);
+    }
   };
 
   return (
-    <div
-      className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-cover bg-center"
-      style={{ 
-        backgroundImage: `url(${bgImage})`,
-        touchAction: 'manipulation' // Prevent zoom on double tap
-      }}
-    >
+    <div className="fixed inset-0 w-full h-full flex items-center justify-center overflow-hidden">
+      {/* Background Image - Using public folder */}
+      <div 
+        className="absolute inset-0 w-full h-full"
+        style={{
+          backgroundImage: `url('/image.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      
+      {/* Dark Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-purple-900/60 to-black/80" />
+
       {/* Audio Element */}
       <audio ref={audioRef} src={musicFile} preload="auto" />
 
-      {/* Main Content */}
-      <div className="bg-white/85 backdrop-blur-md rounded-2xl shadow-2xl p-6 max-w-md w-full">
-        {/* Top Buttons */}
-        <div className="flex gap-2 mb-6">
-          <button 
-            onClick={reset} 
-            className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 active:bg-gray-800 transition-colors font-semibold text-sm shadow-lg"
-          >
-            Reset
-          </button>
-
-          {isPlaying && (
+      {/* Main Container - Perfectly Centered */}
+      <div className="relative z-10 w-full h-full max-w-2xl mx-auto flex flex-col p-4 sm:p-6 md:p-8">
+        
+        {/* Top Action Buttons - Proper Spacing */}
+        <div className="w-full mb-6 sm:mb-8">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <button 
-              onClick={stopMusic} 
-              className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-colors font-semibold text-sm shadow-lg animate-pulse"
+              onClick={reset} 
+              className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-br from-slate-700/90 to-slate-800/90 hover:from-slate-600/90 hover:to-slate-700/90 backdrop-blur-xl text-white rounded-2xl sm:rounded-3xl transition-all font-bold text-sm sm:text-base shadow-2xl border-2 border-white/20 active:scale-95"
             >
-              🔇 Stop
+              Reset
             </button>
-          )}
 
-          <button 
-            onClick={openTargetInput} 
-            className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-semibold text-sm shadow-lg"
-          >
-            Target
-          </button>
+            {isPlaying ? (
+              <button 
+                onClick={stopMusic} 
+                className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-br from-red-600/90 to-red-700/90 hover:from-red-500/90 hover:to-red-600/90 backdrop-blur-xl text-white rounded-2xl sm:rounded-3xl transition-all font-bold text-sm sm:text-base shadow-2xl animate-pulse border-2 border-red-400/30 active:scale-95"
+              >
+                Stop
+              </button>
+            ) : (
+              <div className="px-4 sm:px-6 py-3 sm:py-4" />
+            )}
+
+            <button 
+              onClick={openTargetInput} 
+              className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-br from-cyan-600/90 to-blue-700/90 hover:from-cyan-500/90 hover:to-blue-600/90 backdrop-blur-xl text-white rounded-2xl sm:rounded-3xl transition-all font-bold text-sm sm:text-base shadow-2xl border-2 border-cyan-400/30 active:scale-95"
+            >
+              Target
+            </button>
+          </div>
         </div>
 
-        <h1 className="text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
-          OM Counter
-        </h1>
-
-        {/* Target Input Modal */}
-        {showTargetInput && (
-          <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-400 rounded-2xl shadow-inner">
-            <label className="block text-base font-bold text-gray-800 mb-3">
-              🎯 Set Target Count
-            </label>
-            <input
-              type="number"
-              value={target}
-              onChange={(e) => setTarget(Number(e.target.value))}
-              className="w-full px-5 py-4 text-2xl border-3 border-gray-300 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-200 focus:outline-none mb-4 text-center font-bold"
-              placeholder="Enter target"
-              min="0"
-              inputMode="numeric"
-            />
-            <button
-              onClick={closeTargetInput}
-              className="w-full px-4 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 active:scale-95 transition-all font-bold text-lg shadow-lg"
-            >
-              ✓ Done
-            </button>
+        {/* Middle Content Area - Centered Vertically */}
+        <div className="flex-1 flex flex-col items-center justify-center space-y-6 sm:space-y-8">
+          
+          {/* App Title */}
+          <div className="text-center">
+            <h1 className="text-6xl sm:text-7xl md:text-8xl font-black mb-2 tracking-tight">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-pink-300 to-purple-300 drop-shadow-2xl">
+                OM
+              </span>
+            </h1>
+            <p className="text-white/70 text-xs sm:text-sm font-bold tracking-[0.5em] uppercase">
+              Jappam Counter
+            </p>
           </div>
-        )}
 
-        {/* Show Message */}
-        {showMessage && (
-          <div className="mb-5 p-4 bg-yellow-100 border-2 border-yellow-500 text-yellow-900 rounded-xl text-center font-semibold shadow-md animate-bounce">
-            ⚠️ Please set a target value first!
-          </div>
-        )}
-
-        {/* Count Display */}
-        <div className="mb-8 text-center bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 shadow-inner">
-          <p className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 mb-2">
-            {count}
-          </p>
-          <div className="flex items-center justify-center gap-2 text-lg text-gray-700">
-            <span className="font-medium">Target:</span>
-            <span className="font-bold text-orange-600">
-              {target || '❌ Not set'}
-            </span>
-          </div>
-          {target > 0 && (
-            <div className="mt-3 w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-orange-500 to-red-500 h-3 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min((count / target) * 100, 100)}%` }}
-              ></div>
+          {/* Target Input Modal */}
+          {showTargetInput && (
+            <div className="w-full max-w-sm p-6 sm:p-8 bg-black/90 backdrop-blur-2xl border-2 border-white/40 rounded-3xl shadow-2xl">
+              <label className="block text-xl sm:text-2xl font-black text-white mb-5 text-center">
+                Set Your Target
+              </label>
+              <input
+                type="number"
+                value={target}
+                onChange={(e) => setTarget(Number(e.target.value))}
+                className="w-full px-6 py-5 text-4xl sm:text-5xl bg-white/10 border-3 border-white/40 text-white rounded-2xl focus:border-white/80 focus:ring-4 focus:ring-white/30 focus:outline-none mb-5 text-center font-black placeholder-white/30"
+                placeholder="108"
+                min="0"
+                inputMode="numeric"
+              />
+              <button
+                onClick={closeTargetInput}
+                className="w-full px-6 py-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-2xl transition-all font-black text-xl shadow-2xl active:scale-95"
+              >
+                Confirm
+              </button>
             </div>
           )}
+
+          {/* Warning Message */}
+          {showMessage && (
+            <div className="w-full max-w-sm p-5 bg-yellow-400/95 backdrop-blur-sm border-3 border-yellow-300 text-black rounded-2xl text-center font-black text-lg shadow-2xl animate-bounce">
+              ⚠️ Set a target first!
+            </div>
+          )}
+
+          {/* Count Display Card */}
+          <div className="w-full max-w-md">
+            <div className="bg-black/70 backdrop-blur-2xl rounded-3xl sm:rounded-[2.5rem] p-8 sm:p-12 shadow-2xl border-3 border-white/30">
+              
+              {/* Massive Count Number */}
+              <div className="relative mb-8">
+                <p className="text-8xl sm:text-9xl md:text-[12rem] font-black text-center leading-none">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-purple-200 to-purple-400 drop-shadow-2xl">
+                    {count}
+                  </span>
+                </p>
+                
+                {/* Glow Effect */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-40 h-40 sm:w-56 sm:h-56 bg-purple-500/20 rounded-full blur-3xl" />
+                </div>
+              </div>
+
+              {/* Target Display */}
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <span className="text-white/60 text-base sm:text-lg font-bold uppercase tracking-wider">Target</span>
+                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-pink-300">
+                  {target || '—'}
+                </span>
+              </div>
+
+              {/* Progress Bar */}
+              {target > 0 && (
+                <div className="space-y-3">
+                  <div className="w-full bg-white/20 rounded-full h-4 overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${Math.min((count / target) * 100, 100)}%`,
+                        background: 'linear-gradient(90deg, #a855f7 0%, #ec4899 50%, #f97316 100%)',
+                        boxShadow: '0 0 20px rgba(168, 85, 247, 0.8)'
+                      }}
+                    />
+                  </div>
+                  <p className="text-center text-base sm:text-lg text-white/80 font-black">
+                    {Math.round((count / target) * 100)}% Complete
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Bottom OM Button */}
-        <div className="flex justify-center">
+        {/* Bottom - Massive OM Button */}
+        <div className="w-full mt-6 sm:mt-8">
           <button
             onClick={increment}
-            className="w-full px-8 py-6 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-2xl hover:from-orange-600 hover:to-red-700 active:scale-95 transition-all font-black text-4xl shadow-2xl"
-            style={{ touchAction: 'manipulation' }}
+            className="w-full relative group active:scale-95 transition-transform duration-150"
+            style={{ minHeight: '160px' }}
           >
-            OM 🕉️
+            <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 rounded-[2.5rem] blur-3xl opacity-75 group-active:opacity-100 transition-opacity" />
+            <div className="relative w-full h-full px-10 py-12 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 rounded-[2.5rem] shadow-2xl border-4 border-white/40 flex items-center justify-center">
+              <span className="text-7xl sm:text-8xl md:text-9xl font-black text-white drop-shadow-2xl">
+                OM 🕉️
+              </span>
+            </div>
           </button>
         </div>
-      </div>
-
-      {/* Bottom Info */}
-      <div className="mt-6 text-center text-white text-sm font-medium drop-shadow-lg">
-        <p>Tap OM button to count • Reach your target 🎯</p>
       </div>
     </div>
   );

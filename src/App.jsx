@@ -1,16 +1,7 @@
-
 import OmCounter from './omCounter.jsx';
 
 function App() {
-  return (
-    <>
-
-
- <OmCounter /> 
-
-
-    </>
-  )
+  return <OmCounter />;
 }
 
-export default App
+export default App;
