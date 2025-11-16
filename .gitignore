@@ -34,13 +34,15 @@ android/app/release
 android/.gradle
 android/build
 android/capacitor-cordova-android-plugins
+android/.cxx
+android/local.properties
 ios/App/build
 ios/App/Pods
+.idea/
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
 .DS_Store
 *.suo
 *.ntvs*

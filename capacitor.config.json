@@ -3,10 +3,14 @@
   "appName": "JappamCounter",
   "webDir": "dist",
   "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#000000"
+  },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 2000,
-      "backgroundColor": "#FF6B35",
+      "backgroundColor": "#7C3AED",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": false
     }
