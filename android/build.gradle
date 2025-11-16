@@ -26,9 +26,10 @@ tasks.withType(JavaCompile).configureEach {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+tasks.withType(Class.forName("org.jetbrains.kotlin.gradle.tasks.KotlinCompile")).configureEach {
     kotlinOptions.jvmTarget = "17"
 }
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir
