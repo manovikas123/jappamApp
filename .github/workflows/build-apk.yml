@@ -16,7 +16,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '22'   # <-- FIXED (Node >= 20 required)
         cache: 'npm'
     
     - name: Setup Java
@@ -54,3 +54,4 @@ jobs:
         name: JappamCounter-debug
         path: android/app/build/outputs/apk/debug/app-debug.apk
         retention-days: 30
+
